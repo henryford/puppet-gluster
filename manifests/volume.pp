@@ -43,6 +43,7 @@ define gluster::volume (
   $force          = false,
   $stripe         = false,
   $replica        = false,
+  $arbiter        = 0,
   $transport      = 'tcp',
   $rebalance      = true,
   $heal           = true,
@@ -199,10 +200,14 @@ define gluster::volume (
           }
 
           if $replica {
-            if ( count($bricks) % $replica ) != 0 {
-              fail("Number of bricks to add is not a multiple of replica count ${replica}")
+            if $arbiter and $arbiter != 0 {
+              $r = "replica ${replica} arbiter ${arbiter}"
+            } else {
+              if ( count($bricks) % $replica ) != 0 {
+                fail("Number of bricks to add is not a multiple of replica count ${replica}")
+              }
+              $r = "replica ${replica}"
             }
-            $r = "replica ${replica}"
           } else {
             $r = ''
           }
