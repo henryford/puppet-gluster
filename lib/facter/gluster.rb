@@ -74,7 +74,7 @@ if binary
       volume_bricks.each do |vol, bricks|
         Facter.add("gluster_volume_#{vol}_bricks".to_sym) do
           setcode do
-            bricks.join(',')
+            bricks.join(',').sub(/\s+\(arbiter\)/,'')
           end
         end
       end
