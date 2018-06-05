@@ -43,7 +43,7 @@ define gluster::volume (
   $force          = false,
   $stripe         = false,
   $replica        = false,
-  $arbiter        = 0,
+  $arbiter        = undef,
   $transport      = 'tcp',
   $rebalance      = true,
   $heal           = true,
@@ -76,6 +76,16 @@ define gluster::volume (
     }
   }
 
+  if $arbiter {
+    if ! is_integer( $arbiter ) {
+      fail("Arbiter value ${arbiter} is not an integer")
+    } else {
+      $_arbiter = "arbiter ${arbiter}"
+    }
+  } else {
+    $_arbiter = ''
+  }
+
   if ! member( ['tcp', 'rdma', 'tcp,rdma'], $transport ) {
     fail("Invalid transport ${transport}")
   } else {
@@ -93,6 +103,7 @@ define gluster::volume (
   $cmd_args = [
     $_stripe,
     $_replica,
+    $_arbiter,
     $_transport,
     $_bricks,
     $_force,
